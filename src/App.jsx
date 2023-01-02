@@ -6,30 +6,81 @@ import Screen from "./components/Screen";
 function App() {
 
   const [operation, setOperation] = useState("");
-  const [data, setData] = useState("");
-  const [result, setResult] = useState("");
-
-  let prev;
-  let current;
+  const [data, setData] = useState("0");
+  let total = 0;
 
   function clear() {
     setOperation("");
-    setData("");
+    setData("0");
   }
 
   function updateDisplay() {
-    if(operation.length <= 0 && data.length <=0){
-      setData("NAN");
+    if (operation.length <= 0 && data.length <= 0) {
       setOperation("=NAN");
-    }
-    else if(operation === "/" || operation === "x" || operation === "+" || operation === "-"){
       setData("NAN");
-      setOperation("=NAN");
     }
-    else{
-      setData("result");
-      setOperation("result");
-      console.log(operation);
+    else if (operation === "/" || operation === "x" || operation === "+" || operation === "-") {
+      setOperation("=NAN");
+      setData("NAN");
+    }
+    else if (operation.includes("NAN")) {
+      setOperation("=NAN");
+      setData("NAN");
+    }
+    else {
+      let arrayOperations = operation.split(/(\+|-|x|\/)/);
+      let filteredArray = arrayOperations.filter(function (el) {
+        return el !== "";
+      });
+
+      if (filteredArray[0] === "/" || filteredArray[0] === "x") {
+
+      } else {
+        let sign = "+";
+        for (let x of filteredArray) {
+          if (isNaN(x)) {
+            switch (x) {
+              case "-":
+                sign = "-";
+                console.log(sign, " = ", x);
+                break;
+              case "+":
+                sign = "+";
+                console.log(sign, " = ", x);
+                break;
+              case "x":
+                sign = "x";
+                console.log(sign, " = ", x);
+                break;
+              case "/":
+                sign = "/";
+                console.log(sign, " = ", x);
+                break;
+              default:
+                break;
+            }
+          } else {
+            switch (sign) {
+              case "-":
+                total -= parseFloat(x);
+                break;
+              case "+":
+                total += parseFloat(x);
+                break;
+              case "x":
+                total *= parseFloat(x);
+                break;
+              case "/":
+                total /= parseFloat(x);
+                break;
+              default:
+                break;
+            }
+          }
+        }
+        setOperation((preveState) => preveState + "=" + total);
+        setData(total);
+      }
     }
   }
 
@@ -109,7 +160,7 @@ function App() {
       }
       else if (operation.slice(-1) === "-") {
         setOperation((preveState) => preveState.substring(0, preveState.length - 1) + "+");
-        if(operation.slice(-2, -1) === "+"){
+        if (operation.slice(-2, -1) === "+") {
           setOperation((preveState) => preveState.substring(0, preveState.length - 1));
         }
       }
