@@ -1,0 +1,95 @@
+
+// Va añadiendo valores al estado
+const loadValues = (value) => {
+    setOperations((prevState) => prevState + value);
+    setData((prevState) => prevState + value);
+}
+
+// Cuando pulsamos una operacion
+const handleOperations = (operation) => {
+    // Añade el ultimo valor a la lista de numero
+    numbers.push(data);
+    // Añade la operacion a la lista de calculos
+    calcs.push(operation);
+    // Añade la operacion
+    setOperations((prevState) => prevState + operation);
+    setData(operation)
+}
+
+
+const handleAction = (event) => {
+console.log(eqKey);
+    // Pulsando limpiar
+    if (event.target.value === "AC") {
+      // Reiniciamos los valores
+      setOperations("")
+      setData("");
+      numbers = [];
+      calcs = [];
+    }
+    // Pulsando resultado
+    else if (event.target.value === "=") {
+      
+    }
+    // Pulsando el cero
+    else if (event.target.value === 0 || event.target.value === "0") {
+      // Si la ultima tecla pulsada es el cero o hemos obtenido un NAN
+      if (data === 0 || data === "0" || data === "NAN") {
+        setOperations(0);
+        setData(0);
+      }
+      // Si la ultima tecla pulsada ha sido una operacion
+      else if (data === "/" || data === "x" || data === "-" || data === "+") {
+        // Operaciones añade cero
+        setOperations((prevState) => prevState + event.target.value);
+        // Data guarda cero
+        setData(event.target.value);
+      }
+      else {
+        // Añade el cero
+        loadValues(event.target.value);
+      }
+    }
+    // Pulsando un numero
+    else if (event.target.value >= 0 && event.target.value <= 9) {
+      // Si la ultima tecla pulsada es cero o hemos obtenido NAN
+      if (data === 0 || data === "0" || data === "NAN") {
+        if (operations !== "0" || operations !== 0) {
+          setOperations((prevState) => prevState.slice(0, -1) + event.target.value);
+          setData(event.target.value);
+        } else {
+          setOperations(event.target.value);
+          setData(event.target.value);
+        }
+      }
+      // Si la ultima tecla pulsada es una operacion
+      else if (data === "/" || data === "x" || data === "-" || data === "+") {
+        setOperations((prevState) => prevState + event.target.value);
+        setData(event.target.value);
+      }
+      else {
+        // Añade el numero
+        loadValues(event.target.value);
+      }
+    }
+    // Pulsando el punto
+    else if (event.target.value === ".") {
+      // Convertimos el contenido de data a un string
+      let str = data.toString();
+      // Comprobamos si ya contiene un punto
+      if (!str.includes(".")) {
+        // Si la ultima tecla fue cero, limpiar o hemos obtenido NAN
+        if (data === "" || data === 0 || data === "0" || data === "NAN") {
+          setOperations(0 + event.target.value);
+          setData(0 + event.target.value);
+        } else {
+          // Añade el punto
+          loadValues(event.target.value);
+        }
+      }
+    }
+    // Pulsando una operacion
+    else {
+      handleOperations(event.target.value);
+    }
+}
