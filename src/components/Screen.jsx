@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
-export default function Screen({ operation, data }) {
+export default function Screen({ id, operation, data }) {
     return (
         <div>
             <div className="formulaScreen">{operation}</div>
-            <div className="outputScreen" id="display">{data}</div>
+            <div className="outputScreen" id={id}>{data}</div>
         </div>
     )
 }

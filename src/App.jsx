@@ -7,16 +7,20 @@ function App() {
 
   const [operation, setOperation] = useState("");
   const [data, setData] = useState("0");
-  const [total, setTotal] = useState(0);
-  // let total = 0;
+  const [totalState, setTotalState] = useState(0);
+  let total = 0;
   let lastOperator = "";
 
+  // Formatea todos los estados
   function clear() {
     setOperation("");
     setData("0");
+    setTotalState(0);
   }
 
+  // Muestra el resultado por pantalla
   function updateDisplay() {
+    // Si ya se ha mostrado el resultado y no se añaden mas operaciones no realiza ninguna tarea
     if (operation.includes("=") && !isNaN(parseFloat(operation.slice(-1)))) {
 
     }
@@ -32,16 +36,21 @@ function App() {
       setOperation("=NAN");
       setData("NAN");
     }
+    // Se pueden calcular operaciones
     else {
+      // Convertimos el string de operaciones a un array que distinga numeros de operadores
       let arrayOperations = operation.split(/(\+|-|x|\/)/);
       let filteredArray = arrayOperations.filter(function (el) {
         return el !== "";
       });
-
+      // Si el primer elemento del array es una operacion de "*" o "/" no obtine resultado
       if (filteredArray[0] === "/" || filteredArray[0] === "x") {
 
       } else {
+        // Asignamos una operacion por defecto
         let sign = "+";
+        // Recorremos los elementos del array almacenando los datos numericos
+        // y aplicamos las operaciones que vamos almacenando en otra variable
         for (let x of filteredArray) {
           if (isNaN(x)) {
             switch (x) {
@@ -65,6 +74,7 @@ function App() {
           } else {
             switch (sign) {
               case "-":
+                // En caso de encontrar el operando - nos aseguramos que antes de este no se encontrase ni una "*" o "/"
                 if (lastOperator === "/" || lastOperator === "x") {
                   switch (lastOperator) {
                     case "/":
@@ -83,30 +93,35 @@ function App() {
                 break;
               case "+":
                 total += parseFloat(x);
+                lastOperator = "";
                 break;
               case "x":
                 total *= parseFloat(x);
+                lastOperator = "";
                 break;
               case "/":
                 total /= parseFloat(x);
+                lastOperator = "";
                 break;
               default:
                 break;
             }
           }
         }
-        console.log(total);
+        // Reducimos el numero de decimales del resultado
         total = Math.round((total) * 100000) / 100000;
         setOperation((preveState) => preveState + "=" + total);
         setData(total);
-        console.log(total);
+        setTotalState(total);
       }
     }
   }
 
+  // Añade los numeros
   function addData(event) {
     let value = event.target.value;
 
+    // Si ya se ha mostrado el resultado vuelve a comenzar un nuevo ciclo de operaciones
     if (operation.includes("=")) {
       setOperation(value);
       setData(value);
@@ -129,7 +144,7 @@ function App() {
         setOperation((preveState) => preveState + 0 + value);
         setData(0 + value);
       }
-      else if (data === "") {
+      else if (data === "" || operation === "") {
         setOperation(0 + value);
         setData(0 + value);
       } else {
@@ -162,13 +177,14 @@ function App() {
     }
   }
 
+  // Añade los operandos
   function chooseOperation(event) {
-    console.log(total);
     let value = event.target.value;
     setData(value);
 
+    // Si se ha mostrado el resultado reinicia el estado de operacion al resultado obtenido anteriormente
     if (operation.includes("=")) {
-      setOperation(total + value);
+      setOperation(totalState + value);
       setData(value);
     }
     // x, /, +
@@ -202,7 +218,7 @@ function App() {
 
   return (
     <div className="calculator">
-      <Screen operation={operation} data={data} />
+      <Screen id={"display"} operation={operation} data={data} />
       <div>
         <Button clsName={"jumbo"} id={"clear"} content={"AC"} style={{ background: "rgb(172, 57, 57)" }} action={clear} />
         <Button id={"divide"} content={"/"} style={{ background: "rgb(102, 102, 102)" }} action={chooseOperation} />
@@ -210,7 +226,7 @@ function App() {
         <Button id={"seven"} content={"7"} action={addData} />
         <Button id={"eight"} content={"8"} action={addData} />
         <Button id={"nine"} content={"9"} action={addData} />
-        <Button id={"substract"} content={"-"} style={{ background: "rgb(102, 102, 102)" }} action={chooseOperation} />
+        <Button id={"subtract"} content={"-"} style={{ background: "rgb(102, 102, 102)" }} action={chooseOperation} />
         <Button id={"four"} content={"4"} action={addData} />
         <Button id={"five"} content={"5"} action={addData} />
         <Button id={"six"} content={"6"} action={addData} />
