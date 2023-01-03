@@ -7,7 +7,9 @@ function App() {
 
   const [operation, setOperation] = useState("");
   const [data, setData] = useState("0");
-  let total = 0;
+  const [total, setTotal] = useState(0);
+  // let total = 0;
+  let lastOperator = "";
 
   function clear() {
     setOperation("");
@@ -15,7 +17,10 @@ function App() {
   }
 
   function updateDisplay() {
-    if (operation.length <= 0 && data.length <= 0) {
+    if (operation.includes("=") && !isNaN(parseFloat(operation.slice(-1)))) {
+
+    }
+    else if (operation.length <= 0) {
       setOperation("=NAN");
       setData("NAN");
     }
@@ -42,19 +47,17 @@ function App() {
             switch (x) {
               case "-":
                 sign = "-";
-                console.log(sign, " = ", x);
                 break;
               case "+":
                 sign = "+";
-                console.log(sign, " = ", x);
                 break;
               case "x":
                 sign = "x";
-                console.log(sign, " = ", x);
+                lastOperator = "x";
                 break;
               case "/":
                 sign = "/";
-                console.log(sign, " = ", x);
+                lastOperator = "/";
                 break;
               default:
                 break;
@@ -62,7 +65,21 @@ function App() {
           } else {
             switch (sign) {
               case "-":
-                total -= parseFloat(x);
+                if (lastOperator === "/" || lastOperator === "x") {
+                  switch (lastOperator) {
+                    case "/":
+                      total = total / - parseFloat(x);
+                      break;
+                    case "x":
+                      total = total * - parseFloat(x);
+                      break;
+                    default:
+                      break;
+                  }
+                  lastOperator = "";
+                } else {
+                  total -= parseFloat(x);
+                }
                 break;
               case "+":
                 total += parseFloat(x);
@@ -78,8 +95,11 @@ function App() {
             }
           }
         }
+        console.log(total);
+        total = Math.round((total) * 100000) / 100000;
         setOperation((preveState) => preveState + "=" + total);
         setData(total);
+        console.log(total);
       }
     }
   }
@@ -87,7 +107,11 @@ function App() {
   function addData(event) {
     let value = event.target.value;
 
-    if (value === "0" || value === 0) {
+    if (operation.includes("=")) {
+      setOperation(value);
+      setData(value);
+    }
+    else if (value === "0" || value === 0) {
       if (data === "/" || data === "x" || data === "+" || data === "-") {
         setOperation((preveState) => preveState + value);
         setData(value);
@@ -139,10 +163,16 @@ function App() {
   }
 
   function chooseOperation(event) {
+    console.log(total);
     let value = event.target.value;
     setData(value);
-    // x / +
-    if (value === "/" || value === "x" || value === "+") {
+
+    if (operation.includes("=")) {
+      setOperation(total + value);
+      setData(value);
+    }
+    // x, /, +
+    else if (value === "/" || value === "x" || value === "+") {
       if (operation.slice(-1) === "/" || operation.slice(-1) === "x" || operation.slice(-1) === "+" || operation.slice(-1) === "-") {
         if (operation.slice(-2, -1) === "/" || operation.slice(-2, -1) === "x" || operation.slice(-2, -1) === "+" || operation.slice(-2, -1) === "-") {
           setOperation((preveState) => preveState.substring(0, preveState.length - 2) + value);
